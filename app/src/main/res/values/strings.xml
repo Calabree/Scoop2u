@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Scoop2u</string>
+    <string name="Regi">Register</string>
+    <string name="login">Login</string>
+    <string name="email">Email Address</string>
+    <string name="WBack">Welcome Back!</string>
+    <string name="pword">Password</string>
+    <string name="passwordReset">Forgot Password?</string>
 </resources>
