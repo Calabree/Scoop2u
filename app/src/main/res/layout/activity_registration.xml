@@ -15,12 +15,12 @@
         android:fontFamily="sans-serif-condensed-medium"
         android:gravity="center"
         android:text="@string/Regi"
+        android:textColor="@color/white"
         android:textSize="75sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textColor="@color/white"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/usernameRegister"
@@ -42,11 +42,11 @@
         android:layout_width="380dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/usernameRegister"
         app:layout_constraintStart_toStartOf="@+id/usernameRegister"
         app:layout_constraintTop_toBottomOf="@+id/usernameRegister"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/white"
         tools:ignore="UnusedAttribute" />
 
     <EditText
@@ -72,6 +72,7 @@
         android:layout_marginTop="20dp"
         android:backgroundTint="@color/white"
         android:hint="@string/pword"
+        android:importantForAutofill="no"
         android:inputType="textPassword"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
@@ -79,30 +80,46 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/emailRegister"
         app:layout_constraintTop_toBottomOf="@+id/emailRegister"
-        tools:ignore="UnusedAttribute"
-        android:importantForAutofill="no" />
+        tools:ignore="UnusedAttribute" />
+
+    <EditText
+        android:id="@+id/passwordRegisterConfirm"
+        android:layout_width="380dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/white"
+        android:hint="@string/pwordConf"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/passwordRegister"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/passwordRegister"
+        app:layout_constraintTop_toBottomOf="@+id/passwordRegister"
+        tools:ignore="UnusedAttribute" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button"
         android:layout_width="350dp"
         android:layout_height="60dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="44dp"
         android:background="@drawable/button_selector"
         android:text="@string/Regi"
-        app:layout_constraintEnd_toEndOf="@+id/passwordRegister"
-        app:layout_constraintHorizontal_bias="0.466"
-        app:layout_constraintStart_toStartOf="@+id/passwordRegister"
-        app:layout_constraintTop_toBottomOf="@+id/passwordRegister" />
+        app:layout_constraintEnd_toEndOf="@+id/passwordRegisterConfirm"
+        app:layout_constraintHorizontal_bias="0.433"
+        app:layout_constraintStart_toStartOf="@+id/passwordRegisterConfirm"
+        app:layout_constraintTop_toBottomOf="@+id/passwordRegisterConfirm" />
 
     <ProgressBar
         android:id="@+id/indeterminateBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="invisible"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
