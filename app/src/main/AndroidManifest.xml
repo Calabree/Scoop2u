@@ -9,8 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Scoop2u">
-        <activity android:name=".registration"></activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".DriverWelcomeScreen"></activity>
+        <activity android:name=".CustomerWelcomeScreen" />
+        <activity android:name=".registration" />
+        <activity android:name=".LoginScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
