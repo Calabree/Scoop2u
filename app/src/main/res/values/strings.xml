@@ -6,4 +6,5 @@
     <string name="WBack">Welcome Back!</string>
     <string name="pword">Password</string>
     <string name="passwordReset">Forgot Password?</string>
+    <string name="username">Username</string>
 </resources>
