@@ -10,4 +10,5 @@
     <color name="SecondaryColor">#F19Fc3</color>
     <color  name ="PrimaryColor">#f55e61</color>
     <color name="grey">#cfcfc4</color>
+    <color name="divider">#530F0F</color>
 </resources>
