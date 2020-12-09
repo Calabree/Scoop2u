@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -15,28 +17,35 @@ import com.google.firebase.database.ValueEventListener;
 
 public class CustomerWelcomeScreen extends AppCompatActivity {
 
-    private DatabaseReference mDatabase;
-    private TextView welcomeText;
-
+    private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_welcome_screen);
+        bottomNavigationView=findViewById(R.id.bottomNav);
 
-        welcomeText = (TextView) findViewById(R.id.test);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String welcomeMessage = "Welcome back, " + snapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("username").getValue().toString() + "!";
-                welcomeText.setText(welcomeMessage);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new BottomNavigationView.OnNavigationItemSelectedListener(){
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item){
+            switch(item.getItemId()){
+                case R.id.home:
+
+                    break;
+                case R.id.map:
+
+                    break;
+                case R.id.receipt:
+
+                    break;
+                case R.id.account:
+
+                    break;
+            }
+            return false;
+        }
+    };
+
 }
