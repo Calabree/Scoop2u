@@ -29,7 +29,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".HomeScreen" />
         <activity android:name=".DriverWelcomeScreen" />
         <activity android:name=".CustomerWelcomeScreen" />
         <activity android:name=".registration" />

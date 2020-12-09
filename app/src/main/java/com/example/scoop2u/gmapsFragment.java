@@ -15,18 +15,19 @@ import android.view.ViewGroup;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback {
+public class gmapsFragment extends Fragment implements OnMapReadyCallback {
 
     private MapView map;
 
-    private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
+    private static final String MAPVIEW_BUNDLE_KEY = "API_KEY";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        map = (MapView) view.findViewById(R.id.mappy);
+        View view = inflater.inflate(R.layout.fragment_gmaps, container, false);
+
+        map = view.findViewById(R.id.map);
 
         initGoogleMap(savedInstanceState);
 
