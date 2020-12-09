@@ -31,24 +31,26 @@ public class CustomerWelcomeScreen extends AppCompatActivity {
             case R.id.home:
                 System.out.println("Home View");
                 break;
-            case R.id.map:
+            case R.id.map: {
                 FragmentManager fm = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fm.beginTransaction();
                 fragmentTransaction.replace(R.id.container, fragment);
                 fragmentTransaction.commit();
 
                 System.out.println("Map View");
+            }
                 break;
             case R.id.receipt:
                 System.out.println("Receipt View");
                 break;
-            case R.id.account:
+            case R.id.account: {
                 System.out.println("Account View");
                 CustomerAccountFragment caf = new CustomerAccountFragment();
                 FragmentManager fm = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.add(R.id.container , caf, null);
+                fragmentTransaction.add(R.id.container, caf, null);
                 fragmentTransaction.commit();
+            }
                 break;
         }
         return true;
