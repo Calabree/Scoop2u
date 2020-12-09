@@ -3,6 +3,8 @@ package com.example.scoop2u;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -33,6 +35,11 @@ public class CustomerWelcomeScreen extends AppCompatActivity {
                 break;
             case R.id.account:
                 System.out.println("Account View");
+                CustomerAccountFragment caf = new CustomerAccountFragment();
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.add(R.id.container , caf, null);
+                fragmentTransaction.commit();
                 break;
         }
         return true;

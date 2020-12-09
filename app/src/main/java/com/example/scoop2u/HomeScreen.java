@@ -25,7 +25,6 @@ public class HomeScreen extends AppCompatActivity
 
     private void loadFragment(Fragment fragment)
     {
-
         FragmentManager fm = getFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.replace(R.id.mapFrag, fragment);
