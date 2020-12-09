@@ -4,39 +4,38 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class CustomerWelcomeScreen extends AppCompatActivity {
-
-    private DatabaseReference mDatabase;
-    private TextView welcomeText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_welcome_screen);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
 
-        welcomeText = (TextView) findViewById(R.id.test);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String welcomeMessage = "Welcome back, " + snapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("username").getValue().toString() + "!";
-                welcomeText.setText(welcomeMessage);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
     }
+
+    private final BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = item -> {
+        switch(item.getItemId()){
+            case R.id.home:
+                System.out.println("Home View");
+                break;
+            case R.id.map:
+                System.out.println("Map View");
+                break;
+            case R.id.receipt:
+                System.out.println("Receipt View");
+                break;
+            case R.id.account:
+                System.out.println("Account View");
+                break;
+        }
+        return true;
+    };
+
 }
