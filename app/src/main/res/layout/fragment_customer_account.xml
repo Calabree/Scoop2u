@@ -24,9 +24,12 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="50dp"
-        android:layout_marginStart="15dp">
+        android:layout_marginStart="15dp"
+        android:divider="@drawable/table_divider"
+        android:showDividers="middle|end"
+      >
 
-        <TableRow android:layout_marginTop="10dp">
+        <TableRow android:layout_marginTop="15dp">
             <TextView
                 android:id="@+id/accountEmailLabel"
                 android:layout_width="wrap_content"
@@ -44,7 +47,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="15dp">
             <TextView
                 android:id="@+id/accountUsernameLabel"
                 android:layout_width="wrap_content"
@@ -62,7 +65,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="15dp">
             <TextView
                 android:id="@+id/accountTypeLabel"
                 android:layout_width="wrap_content"
