@@ -11,7 +11,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class CustomerWelcomeScreen extends AppCompatActivity {
 
     gmapsFragment fragment;
-
+    FragmentManager fm;
+    FragmentTransaction fragmentTransaction;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,6 +20,7 @@ public class CustomerWelcomeScreen extends AppCompatActivity {
 
         fragment=new gmapsFragment();
 
+        fm = getFragmentManager();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
@@ -28,29 +30,24 @@ public class CustomerWelcomeScreen extends AppCompatActivity {
 
     private final BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = item -> {
         switch(item.getItemId()){
+
             case R.id.home:
                 System.out.println("Home View");
                 break;
-            case R.id.map: {
-                FragmentManager fm = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+            case R.id.map:
+                fragmentTransaction = fm.beginTransaction();
                 fragmentTransaction.replace(R.id.container, fragment);
                 fragmentTransaction.commit();
-
-                System.out.println("Map View");
-            }
                 break;
             case R.id.receipt:
                 System.out.println("Receipt View");
                 break;
-            case R.id.account: {
-                System.out.println("Account View");
+            case R.id.account:
                 CustomerAccountFragment caf = new CustomerAccountFragment();
-                FragmentManager fm = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.add(R.id.container, caf, null);
+                fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.replace(R.id.container, caf);
                 fragmentTransaction.commit();
-            }
+
                 break;
         }
         return true;
