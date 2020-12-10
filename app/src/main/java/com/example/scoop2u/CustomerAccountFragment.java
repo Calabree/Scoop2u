@@ -40,15 +40,14 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
     private DatabaseReference reference;
     private TextView accountEmail, accountUsername, accountType;
     private EditText etCurrPass, etNewPass, etReNewPass;
-    private Button changePassword;
+    private Button changePassword, logout;
     private FirebaseUser user;
 
     public CustomerAccountFragment() {
     }
 
     public static CustomerAccountFragment newInstance() {
-        CustomerAccountFragment fragment = new CustomerAccountFragment();
-        return fragment;
+        return new CustomerAccountFragment();
     }
 
     @Override
@@ -66,11 +65,11 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
         accountEmail = (TextView) view.findViewById(R.id.accountEmail);
         accountUsername = (TextView) view.findViewById(R.id.accountUsername);
         accountType = (TextView) view.findViewById(R.id.accountType);
-
+        logout = (Button) view.findViewById(R.id.Logout);
         changePassword = (Button) view.findViewById(R.id.accountChangePassword);
 
         changePassword.setOnClickListener(this);
-
+        logout.setOnClickListener(this);
         mAuth.getCurrentUser();
         user = mAuth.getCurrentUser();
 
@@ -92,6 +91,13 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
             }
         });
         return view;
+    }
+
+    public void logout(){
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(getActivity(), LoginScreen.class);
+        startActivity(intent);
+        getActivity().finish();
     }
 
 
@@ -172,7 +178,11 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
     public void onClick(View v)  {
         switch (v.getId()) {
             case R.id.accountChangePassword:
-                changePassword(); break;
+                changePassword();
+                break;
+            case R.id.Logout:
+                logout();
+                break;
         }
     }
 

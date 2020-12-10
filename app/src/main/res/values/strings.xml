@@ -16,4 +16,5 @@
     <string name="currPass">Current Password</string>
     <string name="newPass">New Password</string>
     <string name="reNewPass">Retype New Password</string>
+    <string name="Logout">Logout</string>
 </resources>
