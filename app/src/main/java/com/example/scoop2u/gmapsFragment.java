@@ -12,23 +12,31 @@ import android.app.Fragment;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.LocaleList;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
@@ -58,6 +66,29 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
+    LocationRequest locationRequest;
+
+    Marker m;
+
+    LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            if (locationResult == null) {
+                return;
+            }
+            for(Location location : locationResult.getLocations()) {
+                if (m!= null) {
+                    m.remove();
+                }
+                Log.d(TAG, "OnLocationResult " + location.toString());
+                LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(loc);
+                m = gmap.addMarker(markerOptions);
+            }
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -69,6 +100,11 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
         initGoogleMap(savedInstanceState);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(4000);
+        locationRequest.setFastestInterval(2000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         return view;
     }
@@ -117,11 +153,48 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
         map.onStart();
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            getLastLocation();
+            checkSetting();
         } else {
             askPermission();
         }
+    }
 
+
+    private void checkSetting() {
+        LocationSettingsRequest request = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build();
+
+        SettingsClient client = LocationServices.getSettingsClient(context);
+
+        Task<LocationSettingsResponse> locationSettingsResponseTask = client.checkLocationSettings(request);
+        locationSettingsResponseTask.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                startLocationUpdates();
+            }
+        });
+
+        locationSettingsResponseTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    ResolvableApiException apiException = (ResolvableApiException) e;
+                    try {
+                        apiException.startResolutionForResult(context, 1234);
+                    } catch(IntentSender.SendIntentException ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+            }
+        });
+    }
+
+    private void startLocationUpdates() {
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+    }
+
+    private void stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
     private void getLastLocation() {
@@ -141,10 +214,10 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
                     Log.d(TAG, "onSuccess: " + location.getLatitude());
                     Log.d(TAG, "onSuccess: " + location.toString());
 
-                    LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(loc);
-                    gmap.addMarker(markerOptions);
+                    //LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+                    //MarkerOptions markerOptions = new MarkerOptions();
+                    //markerOptions.position(loc);
+                    //gmap.addMarker(markerOptions);
                 } else {
                     Log.d(TAG, "onSuccess: location was null");
                 }
@@ -195,7 +268,7 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LOCATION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
+                checkSetting();
             } else {
 
             }
@@ -206,6 +279,7 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
     public void onStop() {
         super.onStop();
         map.onStop();
+        stopLocationUpdates();
     }
 
     @Override
