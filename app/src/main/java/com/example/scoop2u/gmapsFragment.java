@@ -3,23 +3,60 @@ package com.example.scoop2u;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+
+import com.google.android.gms.maps.GoogleMap;
+
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
+import static android.content.ContentValues.TAG;
 
 public class gmapsFragment extends Fragment implements OnMapReadyCallback {
 
+    private static final String TAG = "gmapsFragment";
+
     private MapView map;
 
+    private GoogleMap gmap;
+
     private static final String MAPVIEW_BUNDLE_KEY = "API_KEY";
+
+    private FragmentActivity context;
+
+    int LOCATION_REQUEST_CODE = 1234;
+
+    FusedLocationProviderClient fusedLocationProviderClient;
 
     @Nullable
     @Override
@@ -30,6 +67,8 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
         map = view.findViewById(R.id.map);
 
         initGoogleMap(savedInstanceState);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
 
         return view;
     }
@@ -62,12 +101,105 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         map.onResume();
+
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            getLastLocation();
+            String a = context.toString();
+            System.out.println(a);
+        } else {
+            askPermission();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
         map.onStart();
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            getLastLocation();
+        } else {
+            askPermission();
+        }
+
+    }
+
+    private void getLastLocation() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+
+        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    Log.d(TAG, "onSuccess: " + location.toString());
+                    Log.d(TAG, "onSuccess: " + location.getLongitude());
+                    Log.d(TAG, "onSuccess: " + location.getLatitude());
+                    Log.d(TAG, "onSuccess: " + location.toString());
+
+                    LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(loc);
+                    gmap.addMarker(markerOptions);
+                } else {
+                    Log.d(TAG, "onSuccess: location was null");
+                }
+            }
+        });
+
+        locationTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "onFailure: " + e.getLocalizedMessage());
+            }
+        });
+
+        locationTask.addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+
+            }
+        });
+    }
+
+    private void askPermission() {
+        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Log.d(TAG, "askPermission: show alert dialog");
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("permission request")
+                        .setMessage("give permission")
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(getActivity(),
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        LOCATION_REQUEST_CODE);
+                            }
+                        })
+                        .create()
+                        .show();
+                ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == LOCATION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLastLocation();
+            } else {
+
+            }
+        }
     }
 
     @Override
@@ -78,12 +210,13 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap map1) {
+        gmap = map1;
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        map1.setMyLocationEnabled(true);
+        gmap.setMyLocationEnabled(true);
     }
 
     @Override
@@ -104,4 +237,9 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
         map.onLowMemory();
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        context = (FragmentActivity) activity;
+        super.onAttach(activity);
+    }
 }
