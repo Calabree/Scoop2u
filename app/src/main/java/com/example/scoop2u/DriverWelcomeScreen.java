@@ -1,15 +1,17 @@
 package com.example.scoop2u;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class DriverWelcomeScreen extends AppCompatActivity {
-
 
     gmapsFragment fragment;
     FragmentManager fm;
@@ -26,12 +28,36 @@ public class DriverWelcomeScreen extends AppCompatActivity {
 
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
 
-
     }
+
+    LocationListener locationListener = new android.location.LocationListener() {
+        @Override
+        public void onLocationChanged(@NonNull Location location) {
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+            System.out.println("Long:"+longitude+",Lat:"+latitude);
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
 
     private final BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = item -> {
         switch(item.getItemId()){
             case R.id.map:
+
                 fragmentTransaction = fm.beginTransaction();
                 fragmentTransaction.replace(R.id.container, fragment);
                 fragmentTransaction.commit();

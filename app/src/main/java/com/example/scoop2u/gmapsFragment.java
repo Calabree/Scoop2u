@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.Task;
 
 import static android.content.ContentValues.TAG;
 
+
 public class gmapsFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "gmapsFragment";
@@ -69,6 +70,8 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
         initGoogleMap(savedInstanceState);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+
+
 
         return view;
     }
