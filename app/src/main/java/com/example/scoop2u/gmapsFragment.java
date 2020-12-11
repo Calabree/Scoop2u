@@ -47,6 +47,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import static android.content.ContentValues.TAG;
 
@@ -70,6 +72,8 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
 
     Marker m;
 
+    private FirebaseAuth mAuth;
+
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -81,6 +85,18 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
                     m.remove();
                 }
                 Log.d(TAG, "OnLocationResult " + location.toString());
+
+                DriverLocation driverLocation = new DriverLocation(location.getLatitude(), location.getLongitude());
+                FirebaseDatabase.getInstance().getReference("DriverLocation").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(driverLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+
+                        } else{
+                            Toast.makeText(getActivity(), "Failed to Update Location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(loc);
@@ -96,7 +112,7 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_gmaps, container, false);
 
         map = view.findViewById(R.id.map);
-
+        mAuth = FirebaseAuth.getInstance();
         initGoogleMap(savedInstanceState);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
