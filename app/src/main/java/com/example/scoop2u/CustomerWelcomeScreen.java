@@ -37,9 +37,9 @@ public class CustomerWelcomeScreen extends AppCompatActivity {
                 System.out.println("Home View");
                 break;
             case R.id.map:
-                fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.replace(R.id.container, fragment);
-                fragmentTransaction.commit();
+               // fragmentTransaction = fm.beginTransaction();
+               // fragmentTransaction.replace(R.id.container, fragment);
+               // fragmentTransaction.commit();
                 break;
             case R.id.receipt:
                 System.out.println("Receipt View");

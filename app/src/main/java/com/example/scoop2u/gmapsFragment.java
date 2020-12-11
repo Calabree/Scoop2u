@@ -140,8 +140,6 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
-            String a = context.toString();
-            System.out.println(a);
         } else {
             askPermission();
         }
