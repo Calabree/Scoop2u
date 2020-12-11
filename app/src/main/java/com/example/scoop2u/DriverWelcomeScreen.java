@@ -57,7 +57,6 @@ public class DriverWelcomeScreen extends AppCompatActivity {
     private final BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = item -> {
         switch(item.getItemId()){
             case R.id.map:
-
                 fragmentTransaction = fm.beginTransaction();
                 fragmentTransaction.replace(R.id.container, fragment);
                 fragmentTransaction.commit();
