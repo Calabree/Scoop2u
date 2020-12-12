@@ -328,7 +328,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                                     distance = d;
                                     String driverEmail = snap.getKey();
                                     //String driverEmail = snap.child("email").getValue().toString();
-
+                                    //comment test
                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
 
 
