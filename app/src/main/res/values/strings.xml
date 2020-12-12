@@ -20,4 +20,7 @@
     <string name="title_activity_customer_map">customer_map</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="api_key">AIzaSyDSs8zwher07x4A6Z8-fOIBpi9B5KJp9SI</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="address">Delivery Address</string>
 </resources>

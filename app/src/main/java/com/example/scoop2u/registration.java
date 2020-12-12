@@ -14,20 +14,30 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Arrays;
 
 public class registration extends AppCompatActivity implements View.OnClickListener {
 
     private Spinner accounttype;
     private FirebaseAuth mAuth;
-    private EditText userName, email, password, passwordConf;
+    private EditText userName, email, password, passwordConf, address;
     private Button registerButton;
     private ProgressBar progressBar;
-
+    private PlacesClient placesClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +53,11 @@ public class registration extends AppCompatActivity implements View.OnClickListe
 
         userName = (EditText) findViewById(R.id.usernameRegister);
         email = (EditText) findViewById(R.id.emailRegister);
-        password= (EditText) findViewById(R.id.passwordRegister);
+        password = (EditText) findViewById(R.id.passwordRegister);
         passwordConf = (EditText) findViewById(R.id.passwordRegisterConfirm);
         progressBar = (ProgressBar) findViewById(R.id.indeterminateBar);
         registerButton = (Button) findViewById(R.id.button);
+        address = (EditText) findViewById(R.id.address);
         registerButton.setOnClickListener(this);
 
     }
@@ -59,7 +70,7 @@ public class registration extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.button:
                 registerUser();
                 break;
@@ -73,10 +84,11 @@ public class registration extends AppCompatActivity implements View.OnClickListe
         String rUsername = userName.getText().toString().trim();
         String rAccountType = accounttype.getSelectedItem().toString();
         String rAccountTypeIndex = getResources().getStringArray(R.array.account_type)[accounttype.getSelectedItemPosition()];
-
+        String rAddress = address.getText().toString().trim();
         String currentDriverID ="null";
         double longitude= 200;
         double latitude = 200;
+
         if(rUsername.isEmpty()){
             userName.setError("Username is Required");
             userName.requestFocus();
@@ -115,7 +127,12 @@ public class registration extends AppCompatActivity implements View.OnClickListe
             passwordConf.requestFocus();
             return;
         }
-
+        if(rAddress.isEmpty()){
+            address.setError("Delivery Address is Required!");
+            address.requestFocus();
+            return;
+        }
+        //TODO: convert the provided address to Longitude and Latitude
         progressBar.setVisibility(View.VISIBLE);
 
         mAuth.createUserWithEmailAndPassword(rEmail,rPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -145,4 +162,5 @@ public class registration extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
 }
