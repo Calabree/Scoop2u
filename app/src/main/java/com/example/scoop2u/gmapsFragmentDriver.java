@@ -366,7 +366,8 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                     String driverID = snap.child("currentDriverID").getValue().toString();
                     if (type.equals("Customer")) {
                         if (driverID.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                            FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverID);
+                            String customerID = snap.getKey();
+                            FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(CustomerID);
 
                         }
                     }
