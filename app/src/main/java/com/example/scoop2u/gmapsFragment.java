@@ -48,7 +48,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static android.content.ContentValues.TAG;
 
@@ -84,17 +87,21 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
                 }
                 Log.d(TAG, "OnLocationResult " + location.toString());
 
-                DriverLocation driverLocation = new DriverLocation(location.getLatitude(), location.getLongitude());
-                FirebaseDatabase.getInstance().getReference("DriverLocation").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(driverLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
+                FirebaseDatabase.getInstance().getReference().child("Users")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                System.out.println("ok");
+                                FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("latitude").setValue(location.getLatitude());
+                                FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").setValue(location.getLongitude());
 
-                        } else{
-                            Toast.makeText(getActivity(), "Failed to Update Location", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
                 LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(loc);

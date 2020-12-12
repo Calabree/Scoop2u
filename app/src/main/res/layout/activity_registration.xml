@@ -16,7 +16,7 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
+            android:layout_marginTop="40dp"
             android:fontFamily="sans-serif-condensed-medium"
             android:gravity="center"
             android:text="@string/Regi"
@@ -54,6 +54,7 @@
             app:layout_constraintTop_toBottomOf="@+id/usernameRegister"
             tools:ignore="UnusedAttribute" />
 
+
         <EditText
             android:id="@+id/emailRegister"
             android:layout_width="380dp"
@@ -64,26 +65,8 @@
             android:inputType="textEmailAddress"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
-            app:layout_constraintEnd_toEndOf="@+id/address"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/address"
-            app:layout_constraintTop_toBottomOf="@+id/address"
-            tools:ignore="UnusedAttribute" />
-
-
-        <EditText
-            android:id="@+id/address"
-            android:layout_width="380dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="@color/white"
-            android:hint="@string/address"
-            android:importantForAutofill="no"
-            android:inputType="textPostalAddress"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
             app:layout_constraintEnd_toEndOf="@+id/accountType"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/accountType"
             app:layout_constraintTop_toBottomOf="@+id/accountType"
             tools:ignore="UnusedAttribute" />
@@ -133,7 +116,7 @@
             app:layout_constraintHorizontal_bias="0.366"
             app:layout_constraintStart_toStartOf="@+id/passwordRegisterConfirm"
             app:layout_constraintTop_toBottomOf="@+id/passwordRegisterConfirm"
-            app:layout_constraintVertical_bias="0.421" />
+            app:layout_constraintVertical_bias="0.427" />
 
         <ProgressBar
             android:id="@+id/indeterminateBar"
