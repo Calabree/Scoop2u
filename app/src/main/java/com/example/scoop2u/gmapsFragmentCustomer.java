@@ -56,6 +56,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
     private Button pingButton;
 
+    private boolean orderInProgress = false;
 
     private int LOCATION_REQUEST_CODE = 4321;
 
@@ -301,12 +302,11 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
     private void findNearestDriverId(double lat1, double lon1) {
 
 
-
-        FirebaseDatabase.getInstance().getReference().child("Users")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    double distance = 0;
+        FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        double distance = 0;
                         for (DataSnapshot snap : snapshot.getChildren()) {
 
                             String type = snap.child("accountType").getValue().toString();
@@ -319,26 +319,32 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                                 double d = calculateDistance(lat1, lon1, lat2, lon2);
 
                                 System.out.println(d);
-                                 if (d < distance || distance == 0) {
-                                     System.out.println(d + " Miles");
+                                if (d < distance || distance == 0) {
+                                    System.out.println(d + " Miles");
 
-                                     distance = d;
+                                    distance = d;
 
-                                     String driverEmail = snap.child("email").getValue().toString();
+                                    String driverEmail = snap.child("email").getValue().toString();
 
-                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
-
-                                     System.out.println("Closest Driver: " + driverEmail);
-                                  }
+                                    FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
+                                    orderInProgress = true;
+                                    System.out.println("Closest Driver: " + driverEmail);
+                                }
                             }
                         }
+                        activeOrder(orderInProgress);
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
                     }
+
+
                 });
+
+
+
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -348,5 +354,31 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         distance = (distance * 180.0 / Math.PI);
         distance = distance * 60 * 1.1515;
         return distance;
+    }
+
+    private void activeOrder(boolean orderInProgress) {
+        while (orderInProgress) {
+
+            FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    String driveID = snapshot.child("currentDriverID").getValue().toString();
+
+                    String test = FirebaseDatabase.getInstance().getReference("Users").child(driveID).getParent().toString();
+
+                    System.out.println(test);
+                    //FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").setValue(location.getLongitude());
+
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 }
