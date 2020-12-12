@@ -44,6 +44,7 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
     private FirebaseUser user;
 
     public CustomerAccountFragment() {
+        //test comment for download
     }
 
     public static CustomerAccountFragment newInstance() {
