@@ -68,7 +68,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
     private FragmentActivity context;
 
-    private Button pingButton;
+    private Button pingButton, stopPingButton;
 
     private boolean orderInProgress;
 
@@ -99,7 +99,9 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         initGoogleMap(savedInstanceState);
 
         pingButton = (Button) view.findViewById(R.id.pingButton);
+        stopPingButton = (Button) view.findViewById(R.id.pingButton);
         pingButton.setOnClickListener(this);
+        stopPingButton.setOnClickListener(this);
 
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(4000);
@@ -111,6 +113,21 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
     @Override
     public void onClick(View view) {
+       switch (view.getId()){
+           case R.id.pingButton:
+               pingButton.setVisibility(View.GONE);
+               stopPingButton.setVisibility(View.VISIBLE);
+               ping();
+               break;
+           case R.id.stropPingButton:
+               pingButton.setVisibility(View.GONE);
+               pingButton.setVisibility(View.VISIBLE);
+               orderInProgress = false;
+               break;
+       }
+    }
+
+    private void ping(){
         mAuth = FirebaseAuth.getInstance();
 
         mAuth.getCurrentUser();
@@ -140,6 +157,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                     }
                 });
     }
+
 
     private void initGoogleMap(Bundle savedInstanceState) {
         Bundle mapViewBundle = null;
@@ -363,7 +381,6 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                                     distance = d;
                                     String driverEmail = snap.getKey();
                                     //String driverEmail = snap.child("email").getValue().toString();
-                                    //comment test
 
                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
 
