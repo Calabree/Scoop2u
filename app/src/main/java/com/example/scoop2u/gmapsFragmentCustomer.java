@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -33,9 +34,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -201,6 +204,20 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(loc);
                     gmap.addMarker(markerOptions);
+
+                    Criteria criteria = new Criteria();
+
+                    if (location != null)
+                    {
+                        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
+
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(new LatLng(location.getLatitude(), location.getLongitude()))
+                                .zoom(17)
+                                .bearing(90)
+                                .build();
+                        gmap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                    }
 
                     FirebaseDatabase.getInstance().getReference().child("Users")
                             .addListenerForSingleValueEvent(new ValueEventListener() {
