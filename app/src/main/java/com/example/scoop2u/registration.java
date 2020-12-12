@@ -28,7 +28,7 @@ public class registration extends AppCompatActivity implements View.OnClickListe
 
     private Spinner accounttype;
     private FirebaseAuth mAuth;
-    private EditText userName, email, password, passwordConf, address;
+    private EditText userName, email, password, passwordConf;
     private Button registerButton;
     private ProgressBar progressBar;
     //private PlacesClient placesClient;
@@ -51,7 +51,6 @@ public class registration extends AppCompatActivity implements View.OnClickListe
         passwordConf = (EditText) findViewById(R.id.passwordRegisterConfirm);
         progressBar = (ProgressBar) findViewById(R.id.indeterminateBar);
         registerButton = (Button) findViewById(R.id.button);
-        address = (EditText) findViewById(R.id.address);
         registerButton.setOnClickListener(this);
 
     }
@@ -78,8 +77,8 @@ public class registration extends AppCompatActivity implements View.OnClickListe
         String rUsername = userName.getText().toString().trim();
         String rAccountType = accounttype.getSelectedItem().toString();
         String rAccountTypeIndex = getResources().getStringArray(R.array.account_type)[accounttype.getSelectedItemPosition()];
-        String rAddress = address.getText().toString().trim();
-        String currentDriverID ="null";
+
+        String currentDriverID ="nothing";
         double longitude= 200;
         double latitude = 200;
 
@@ -121,12 +120,7 @@ public class registration extends AppCompatActivity implements View.OnClickListe
             passwordConf.requestFocus();
             return;
         }
-        if(rAddress.isEmpty()){
-            address.setError("Delivery Address is Required!");
-            address.requestFocus();
-            return;
-        }
-        //TODO: convert the provided address to Longitude and Latitude
+
         progressBar.setVisibility(View.VISIBLE);
 
         mAuth.createUserWithEmailAndPassword(rEmail,rPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
