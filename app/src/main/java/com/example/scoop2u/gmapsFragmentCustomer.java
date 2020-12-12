@@ -4,9 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +24,20 @@ import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -66,6 +75,8 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
     private LocationRequest locationRequest;
 
+    private Marker driverMark;
+
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     FirebaseUser currentuser;
@@ -86,6 +97,11 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
         pingButton = (Button) view.findViewById(R.id.pingButton);
         pingButton.setOnClickListener(this);
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(4000);
+        locationRequest.setFastestInterval(2000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         return view;
     }
@@ -263,6 +279,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
     public void onStop() {
         super.onStop();
         map.onStop();
+        stopLocationUpdates();
     }
 
     @Override
@@ -363,29 +380,89 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
     private void activeOrder(boolean orderInProgress) {
 
-        while (orderInProgress) {
-
-            FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
-
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    String currentDriver = snapshot.child("currentDriverID").getValue().toString();
-                    double lat2 = Double.parseDouble(snapshot.child(currentDriver).child("latitude").getValue().toString());
-                    double lon2 = Double.parseDouble(snapshot.child(currentDriver).child("longitude").getValue().toString());
-                    System.out.println("driver lat:"+lat2+",drver lon:"+lon2);
-
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-
-            sleep(5000);
-            System.out.println("Hey, We slept for 5 seconds!");
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            checkSetting();
+        } else {
+            askPermission();
         }
+        }
+
+
+
+    private void checkSetting() {
+        LocationSettingsRequest request = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build();
+
+        SettingsClient client = LocationServices.getSettingsClient(context);
+
+        Task<LocationSettingsResponse> locationSettingsResponseTask = client.checkLocationSettings(request);
+        locationSettingsResponseTask.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                startLocationUpdates();
+            }
+        });
+
+        locationSettingsResponseTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    ResolvableApiException apiException = (ResolvableApiException) e;
+                    try {
+                        apiException.startResolutionForResult(context, 1234);
+                    } catch(IntentSender.SendIntentException ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+            }
+        });
     }
+
+    private void startLocationUpdates() {
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+    }
+
+    private void stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+    LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            if (locationResult == null) {
+                return;
+            }
+            for(Location location : locationResult.getLocations()) {
+                if (driverMark!= null) {
+                    driverMark.remove();
+                }
+                Log.d(TAG, "OnLocationResult " + location.toString());
+
+                FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        System.out.println("firebase");
+                        String currentDriver = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
+                        double lat2 = Double.parseDouble(snapshot.child(currentDriver).child("latitude").getValue().toString());
+                        double lon2 = Double.parseDouble(snapshot.child(currentDriver).child("longitude").getValue().toString());
+                        System.out.println("driver lat:"+lat2+",drver lon:"+lon2);
+
+                        LatLng loc = new LatLng(lat2, lon2);
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(loc);
+                        driverMark = gmap.addMarker(markerOptions);
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+            }
+        }
+    };
 }
