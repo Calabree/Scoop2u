@@ -118,7 +118,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                 pingButton.setVisibility(View.GONE);
                 stopPingButton.setVisibility(View.VISIBLE);
                 ping();
-                activeOrder(orderInProgress);
+                //activeOrder(orderInProgress);
                 break;
             case R.id.stopPingButton:
                 stopPingButton.setVisibility(View.GONE);
@@ -146,7 +146,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                             double lat = Double.parseDouble(snapshot.child(currentuser.getUid()).child("latitude").getValue().toString());
                             double lon = Double.parseDouble(snapshot.child(currentuser.getUid()).child("longitude").getValue().toString());
                             System.out.println(lat + ", " + lon);
-                            findNearestDriverId(lat, lon);
+                            findCustomer(lat, lon);
                         }
 
                     }
@@ -354,56 +354,30 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
     }
 
 
-    private void findNearestDriverId(double lat1, double lon1) {
+    private void findCustomer(double lat1, double lon1) {
 
 
         FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                orderInProgress = false;
-                double distance = 0;
                 for (DataSnapshot snap : snapshot.getChildren()) {
-
                     String type = snap.child("accountType").getValue().toString();
-                    System.out.println();
-                    if (type.equals("Driver")) {
-                        double lat2 = Double.parseDouble(snap.child("latitude").getValue().toString());
-                        double lon2 = Double.parseDouble(snap.child("longitude").getValue().toString());
-                        System.out.println(lat2 + " ,s " + lon2);
+                    String driverID = snap.child("currentDriverID").getValue().toString();
+                    if (type.equals("Customer")) {
+                        if (driverID.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverID);
 
-                        double d = calculateDistance(lat1, lon1, lat2, lon2);
-
-                        System.out.println(d);
-                        if (d < distance || distance == 0) {
-                            System.out.println(d + " Miles");
-
-                            distance = d;
-                            String driverEmail = snap.getKey();
-                            //String driverEmail = snap.child("email").getValue().toString();
-
-                            FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
-
-
-
-                            orderInProgress = true;
-
-                            System.out.println("Closest Driver: " + driverEmail);
                         }
                     }
                 }
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-
-
         });
 
-        //activeOrder(orderInProgress);
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -415,7 +389,8 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
         return distance;
     }
 
-    private void activeOrder(boolean orderInProgress) {
+    //runs if customer orders
+    private void activeOrder() {
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             checkSetting();
@@ -425,7 +400,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
     }
 
 
-
+    //check for location privilege - if set starts location loop
     private void checkSetting() {
         LocationSettingsRequest request = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build();
 
@@ -454,11 +429,11 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
             }
         });
     }
-
+    //start location loop
     private void startLocationUpdates() {
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
-
+    //stops location loop
     private void stopLocationUpdates() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
