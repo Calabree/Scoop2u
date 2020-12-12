@@ -13,4 +13,28 @@ public class User {
         this.email = email;
         this.currentDriverID = currentDriverID;
     }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String at) {
+        accountType = at;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double l) {
+        longitude = l;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double l) {
+        latitude = l;
+    }
 }

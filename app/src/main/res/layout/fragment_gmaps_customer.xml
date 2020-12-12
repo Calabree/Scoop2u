@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/pingButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ping"
+        android:onClick="userPing" />
+
     <com.google.android.gms.maps.MapView android:id="@+id/cmap"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         xmlns:android="http://schemas.android.com/apk/res/android"
         />
-
+</FrameLayout>
 
 
 
