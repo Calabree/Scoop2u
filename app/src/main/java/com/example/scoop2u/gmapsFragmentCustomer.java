@@ -147,6 +147,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         map.onCreate(mapViewBundle);
 
         map.getMapAsync(this);
+
     }
 
     @Override
@@ -346,11 +347,13 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                                     String driverEmail = snap.getKey();
                                     //String driverEmail = snap.child("email").getValue().toString();
                                     //comment test
+
                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
 
 
 
                                     orderInProgress = true;
+
                                     System.out.println("Closest Driver: " + driverEmail);
                                 }
                             }

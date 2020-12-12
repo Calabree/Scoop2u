@@ -27,6 +27,7 @@ public class DriverWelcomeScreen extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
+        bottomNavigationView.setSelectedItemId(R.id.account);
 
     }
 

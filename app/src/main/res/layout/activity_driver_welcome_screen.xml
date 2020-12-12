@@ -8,9 +8,13 @@
     tools:context=".CustomerWelcomeScreen">
 
     <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/container"/>
+        android:layout_height="501dp"
+        android:layout_above="@+id/bottomNav"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="match_parent"
