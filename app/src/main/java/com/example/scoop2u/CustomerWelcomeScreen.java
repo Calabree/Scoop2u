@@ -12,7 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class CustomerWelcomeScreen extends AppCompatActivity {
 
-    gmapsFragment fragment;
+    gmapsFragmentCustomer fragment;
     FragmentManager fm;
     FragmentTransaction fragmentTransaction;
     @Override
@@ -20,7 +20,7 @@ public class CustomerWelcomeScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_welcome_screen);
 
-        fragment=new gmapsFragment();
+        fragment=new gmapsFragmentCustomer();
 
         fm = getFragmentManager();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
@@ -34,10 +34,11 @@ public class CustomerWelcomeScreen extends AppCompatActivity {
             case R.id.home:
                 System.out.println("Home View");
                 break;
-            case R.id.map:
-               // fragmentTransaction = fm.beginTransaction();
-               // fragmentTransaction.replace(R.id.container, fragment);
-               // fragmentTransaction.commit();
+            case R.id.map: {
+                fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.replace(R.id.container, fragment);
+                fragmentTransaction.commit();
+            }
                 break;
             case R.id.receipt:
                 System.out.println("Receipt View");

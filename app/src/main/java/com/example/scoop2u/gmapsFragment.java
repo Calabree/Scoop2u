@@ -64,13 +64,13 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
 
     private FragmentActivity context;
 
-    int LOCATION_REQUEST_CODE = 1234;
+    private int LOCATION_REQUEST_CODE = 1234;
 
-    FusedLocationProviderClient fusedLocationProviderClient;
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
-    LocationRequest locationRequest;
+    private LocationRequest locationRequest;
 
-    Marker m;
+    private Marker m;
 
     LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -225,10 +225,10 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
                     Log.d(TAG, "onSuccess: " + location.getLatitude());
                     Log.d(TAG, "onSuccess: " + location.toString());
 
-                    //LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-                    //MarkerOptions markerOptions = new MarkerOptions();
-                    //markerOptions.position(loc);
-                    //gmap.addMarker(markerOptions);
+                    LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(loc);
+                    gmap.addMarker(markerOptions);
                 } else {
                     Log.d(TAG, "onSuccess: location was null");
                 }
