@@ -56,7 +56,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import static android.os.SystemClock.sleep;
 
-public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback {
+public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback, View.OnClickListener {
 
     private MapView map;
 
@@ -90,7 +90,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback 
 
         View view = inflater.inflate(R.layout.fragment_gmaps_driver, container, false);
 
-        map = view.findViewById(R.id.cmap);
+        map = view.findViewById(R.id.map);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
 
@@ -99,12 +99,29 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback 
         initGoogleMap(savedInstanceState);
 
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(6000);
-        locationRequest.setFastestInterval(5000);
+        locationRequest.setInterval(4000);
+        locationRequest.setFastestInterval(2000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        findCustomer();
         return view;
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.pingButton:
+                pingButton.setVisibility(View.GONE);
+                stopPingButton.setVisibility(View.VISIBLE);
+
+                //activeOrder(orderInProgress);
+                break;
+            case R.id.stopPingButton:
+                stopPingButton.setVisibility(View.GONE);
+                pingButton.setVisibility(View.VISIBLE);
+                stopLocationUpdates();
+                break;
+        }
+    }
 
     /*private void ping(){
         mAuth = FirebaseAuth.getInstance();
@@ -334,18 +351,16 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback 
 
 
     private void findCustomer() {
-        System.out.println("findCustomer running");
+
 
         FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot snap : snapshot.getChildren()) {
-                    System.out.println("snapshot loop");
                     String type = snap.child("accountType").getValue().toString();
                     String driverID = snap.child("currentDriverID").getValue().toString();
                     if (type.equals("Customer")) {
-                        System.out.println("got a customer");
                         if (driverID.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                             String customerID = snap.getKey();
                             FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(customerID);
@@ -362,14 +377,14 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback 
 
     }
 
-    /*private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         double t = lon1 - lon2;
         double distance = Math.sin(lat1 * Math.PI / 180.0) * Math.sin(lat2 * Math.PI / 180.0) + Math.cos(lat1 * Math.PI / 180.0) * Math.cos(lat2 * Math.PI / 180.0) * Math.cos(Math.toRadians(t));
         distance = Math.acos(distance);
         distance = (distance * 180.0 / Math.PI);
         distance = distance * 60 * 1.1515;
         return distance;
-    }*/
+    }
 
     //runs if customer orders
 
@@ -424,14 +439,42 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback 
                     m.remove();
                 }
                 Log.d(TAG, "OnLocationResult " + location.toString());
+                double lat = location.getLatitude();
+                double lon = location.getLongitude();
+
+
 
                 FirebaseDatabase.getInstance().getReference().child("Users")
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String customerID;
                                 System.out.println("ok");
-                                FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("latitude").setValue(location.getLatitude());
-                                FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").setValue(location.getLongitude());
+                                FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("latitude").setValue(lat);
+                                FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").setValue(lon);
+                                 customerID = snapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
+
+                                FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for (DataSnapshot snap : snapshot.getChildren()) {
+                                            if (snap.getKey().equals(customerID)) {
+                                                String customerID2 = snap.getKey();
+                                                double lat2 = Double.parseDouble(snapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("latitude").getValue().toString());
+                                                double lon2 = Double.parseDouble(snapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").getValue().toString());
+
+                                                if (calculateDistance(lat, lon, lat2, lon2) <= 5) {
+                                                    onStop();
+                                                }
+                                            }
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                             }
 
                             @Override
@@ -439,7 +482,11 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback 
 
                             }
                         });
-                findCustomer();
+
+
+
+
+
                 LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(loc);

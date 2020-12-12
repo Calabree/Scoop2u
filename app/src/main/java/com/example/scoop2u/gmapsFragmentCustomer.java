@@ -105,7 +105,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(4000);
-        locationRequest.setFastestInterval(2000);
+        locationRequest.setFastestInterval(2000);   // update location every 2 - 4 seconds 
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         return view;
@@ -128,7 +128,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
        }
     }
 
-    private void ping(){
+    private void ping(){    // Gets Users location and finds nearest Driver, driver is assigned a delivery to that driver, and user starts recieveing the drivers location updates
         mAuth = FirebaseAuth.getInstance();
 
         mAuth.getCurrentUser();
@@ -203,7 +203,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         map.onStart();
     }
 
-    private void getLastLocation() {
+    private void getLastLocation() {    //Find last location of the customer
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -213,25 +213,24 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
-            public void onSuccess(Location location) {
+            public void onSuccess(Location location) {  // Found the initial location
                 if (location != null) {
                     Log.d(TAG, "onSuccess: " + location.toString());
-                    Log.d(TAG, "onSuccess: " + location.getLongitude());
+                    Log.d(TAG, "onSuccess: " + location.getLongitude()); // Log information
                     Log.d(TAG, "onSuccess: " + location.getLatitude());
-                    Log.d(TAG, "onSuccess: " + location.toString());
 
                     LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(loc);
-                    gmap.addMarker(markerOptions);
+                    gmap.addMarker(markerOptions); // Add a marker to the customers location
 
                     Criteria criteria = new Criteria();
 
-                    if (location != null)
+                    if (location != null) // If a location was found
                     {
                         gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
-                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                        CameraPosition cameraPosition = new CameraPosition.Builder()    // Zoom to the customers location on map startup
                                 .target(new LatLng(location.getLatitude(), location.getLongitude()))
                                 .zoom(17)
                                 .bearing(90)
@@ -242,16 +241,14 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                     FirebaseDatabase.getInstance().getReference().child("Users")
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {  // Set the users coordinate location in firebase
                                     System.out.println("ok");
                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("latitude").setValue(location.getLatitude());
                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").setValue(location.getLongitude());
-
                                 }
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
-
                                 }
                             });
 
@@ -276,7 +273,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         });
     }
 
-    private void askPermission() {
+    private void askPermission() {  // Get permission to use location services in a dialog.
         if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Log.d(TAG, "askPermission: show alert dialog");
@@ -302,10 +299,10 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {   // Determine what to do when a result is recieved
         if (requestCode == LOCATION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
+                getLastLocation();  // Get the location if permission given
             } else {
 
             }
@@ -355,25 +352,25 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
     }
 
 
-    private void findNearestDriverId(double lat1, double lon1) {
+    private void findNearestDriverId(double lat1, double lon1) {    // find the nearest driver when a ping is recieved.
 
 
         FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
 
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    public void onDataChange(@NonNull DataSnapshot snapshot) { // Loop through each user int he database and find drivers coordinates
                         orderInProgress = false;
                         double distance = 0;
                         for (DataSnapshot snap : snapshot.getChildren()) {
 
                             String type = snap.child("accountType").getValue().toString();
                             System.out.println();
-                            if (type.equals("Driver")) {
+                            if (type.equals("Driver")) { // If the user is a driver
                                 double lat2 = Double.parseDouble(snap.child("latitude").getValue().toString());
                                 double lon2 = Double.parseDouble(snap.child("longitude").getValue().toString());
                                 System.out.println(lat2 + " ,s " + lon2);
 
-                                double d = calculateDistance(lat1, lon1, lat2, lon2);
+                                double d = calculateDistance(lat1, lon1, lat2, lon2); // Use calculateDistance function to determines the distance to customer
 
                                 System.out.println(d);
                                 if (d < distance || distance == 0) {
@@ -383,9 +380,8 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                                     String driverEmail = snap.getKey();
                                     //String driverEmail = snap.child("email").getValue().toString();
 
+                                    // Save the closest drivers id to the customers account, this marks a delivery to this user.
                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
-
-
 
                                     orderInProgress = true;
 
@@ -407,7 +403,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                 //activeOrder(orderInProgress);
     }
 
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) { // Calculates distance from one set of latitude / longitude to another
         double t = lon1 - lon2;
         double distance = Math.sin(lat1 * Math.PI / 180.0) * Math.sin(lat2 * Math.PI / 180.0) + Math.cos(lat1 * Math.PI / 180.0) * Math.cos(lat2 * Math.PI / 180.0) * Math.cos(Math.toRadians(t));
         distance = Math.acos(distance);
@@ -416,7 +412,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         return distance;
     }
 
-    private void activeOrder(boolean orderInProgress) {
+    private void activeOrder(boolean orderInProgress) { // When a ping is recieved start the location service
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             checkSetting();
@@ -427,7 +423,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
 
 
-    private void checkSetting() {
+    private void checkSetting() { // Check the location setting and if they are correct start location updates
         LocationSettingsRequest request = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build();
 
         SettingsClient client = LocationServices.getSettingsClient(context);
