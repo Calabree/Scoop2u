@@ -99,7 +99,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         initGoogleMap(savedInstanceState);
 
         pingButton = (Button) view.findViewById(R.id.pingButton);
-        stopPingButton = (Button) view.findViewById(R.id.pingButton);
+        stopPingButton = (Button) view.findViewById(R.id.stopPingButton);
         pingButton.setOnClickListener(this);
         stopPingButton.setOnClickListener(this);
 
@@ -118,11 +118,12 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                pingButton.setVisibility(View.GONE);
                stopPingButton.setVisibility(View.VISIBLE);
                ping();
+               activeOrder(orderInProgress);
                break;
-           case R.id.stropPingButton:
-               pingButton.setVisibility(View.GONE);
+           case R.id.stopPingButton:
+               stopPingButton.setVisibility(View.GONE);
                pingButton.setVisibility(View.VISIBLE);
-               orderInProgress = false;
+               stopLocationUpdates();
                break;
        }
     }
@@ -403,7 +404,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
                 });
 
-                activeOrder(orderInProgress);
+                //activeOrder(orderInProgress);
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -490,7 +491,6 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                         markerOptions.position(loc);
                         driverMark = gmap.addMarker(markerOptions);
 
-
                     }
 
                     @Override
@@ -502,4 +502,5 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
             }
         }
     };
+
 }
