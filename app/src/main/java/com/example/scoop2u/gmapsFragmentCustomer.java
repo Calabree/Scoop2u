@@ -42,6 +42,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import static android.os.SystemClock.sleep;
+
 public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallback, View.OnClickListener {
 
     private MapView map;
@@ -56,7 +58,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
     private Button pingButton;
 
-    private boolean orderInProgress = false;
+    private boolean orderInProgress;
 
     private int LOCATION_REQUEST_CODE = 4321;
 
@@ -303,9 +305,10 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
 
         FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                        orderInProgress = false;
                         double distance = 0;
                         for (DataSnapshot snap : snapshot.getChildren()) {
 
@@ -323,16 +326,19 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                                     System.out.println(d + " Miles");
 
                                     distance = d;
-
-                                    String driverEmail = snap.child("email").getValue().toString();
+                                    String driverEmail = snap.getKey();
+                                    //String driverEmail = snap.child("email").getValue().toString();
 
                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
+
+
+
                                     orderInProgress = true;
                                     System.out.println("Closest Driver: " + driverEmail);
                                 }
                             }
                         }
-                        activeOrder(orderInProgress);
+
                     }
 
                     @Override
@@ -343,8 +349,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
                 });
 
-
-
+                activeOrder(orderInProgress);
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -357,6 +362,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
     }
 
     private void activeOrder(boolean orderInProgress) {
+
         while (orderInProgress) {
 
             FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -364,12 +370,10 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    String driveID = snapshot.child("currentDriverID").getValue().toString();
-
-                    String test = FirebaseDatabase.getInstance().getReference("Users").child(driveID).getParent().toString();
-
-                    System.out.println(test);
-                    //FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").setValue(location.getLongitude());
+                    String currentDriver = snapshot.child("currentDriverID").getValue().toString();
+                    double lat2 = Double.parseDouble(snapshot.child(currentDriver).child("latitude").getValue().toString());
+                    double lon2 = Double.parseDouble(snapshot.child(currentDriver).child("longitude").getValue().toString());
+                    System.out.println("driver lat:"+lat2+",drver lon:"+lon2);
 
 
                 }
@@ -379,6 +383,9 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
                 }
             });
+
+            sleep(5000);
+            System.out.println("Hey, We slept for 5 seconds!");
         }
     }
 }
