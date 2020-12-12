@@ -107,7 +107,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
         locationRequest.setInterval(4000);
         locationRequest.setFastestInterval(2000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
+        findCustomer();
         return view;
     }
 
@@ -117,7 +117,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
             case R.id.pingButton:
                 pingButton.setVisibility(View.GONE);
                 stopPingButton.setVisibility(View.VISIBLE);
-                ping();
+
                 //activeOrder(orderInProgress);
                 break;
             case R.id.stopPingButton:
@@ -128,7 +128,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    private void ping(){
+    /*private void ping(){
         mAuth = FirebaseAuth.getInstance();
 
         mAuth.getCurrentUser();
@@ -157,7 +157,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                     }
                 });
     }
-
+*/
 
     private void initGoogleMap(Bundle savedInstanceState) {
         Bundle mapViewBundle = null;
@@ -191,6 +191,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             getLastLocation();
+            checkSetting();
         } else {
             askPermission();
         }
@@ -354,7 +355,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
     }
 
 
-    private void findCustomer(double lat1, double lon1) {
+    private void findCustomer() {
 
 
         FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -367,7 +368,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                     if (type.equals("Customer")) {
                         if (driverID.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                             String customerID = snap.getKey();
-                            FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(CustomerID);
+                            FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(customerID);
 
                         }
                     }
@@ -391,14 +392,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
     }
 
     //runs if customer orders
-    private void activeOrder() {
 
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            checkSetting();
-        } else {
-            askPermission();
-        }
-    }
 
 
     //check for location privilege - if set starts location loop
