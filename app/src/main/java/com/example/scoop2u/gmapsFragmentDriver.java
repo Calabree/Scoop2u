@@ -84,6 +84,8 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
     private DatabaseReference mDatabase;
     FirebaseUser currentuser;
 
+    private String customerID;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -446,35 +448,27 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
 
                 FirebaseDatabase.getInstance().getReference().child("Users")
                         .addListenerForSingleValueEvent(new ValueEventListener() {
+
+
+
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                String customerID;
+                                String ID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                 System.out.println("ok");
-                                FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("latitude").setValue(lat);
-                                FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").setValue(lon);
-                                 customerID = snapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
+                                FirebaseDatabase.getInstance().getReference("Users").child(ID).child("latitude").setValue(lat);
+                                FirebaseDatabase.getInstance().getReference("Users").child(ID).child("longitude").setValue(lon);
+                                customerID = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
 
-                                FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+                                double lat2 = Double.parseDouble(snapshot.child(customerID).child("latitude").getValue().toString());
+                                double lon2 = Double.parseDouble(snapshot.child(customerID).child("longitude").getValue().toString());
 
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        for (DataSnapshot snap : snapshot.getChildren()) {
-                                            if (snap.getKey().equals(customerID)) {
-                                                String customerID2 = snap.getKey();
-                                                double lat2 = Double.parseDouble(snapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("latitude").getValue().toString());
-                                                double lon2 = Double.parseDouble(snapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").getValue().toString());
+                                double distance = calculateDistance(lat, lon, lat2, lon2);
+                                if (distance <= 5.0) {
+                                    System.out.println("stopped, driver within 5 miles");
 
-                                                if (calculateDistance(lat, lon, lat2, lon2) <= 5) {
-                                                    onStop();
-                                                }
-                                            }
-                                    }
+                                    FirebaseDatabase.getInstance().getReference("Users").child(customerID).child("currentDriverID").setValue("null");
+                                    FirebaseDatabase.getInstance().getReference("Users").child(ID).child("currentDriverID").setValue("null");
                                 }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
                             }
 
                             @Override
@@ -482,7 +476,31 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
 
                             }
                         });
+/*
+                FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
 
+                    @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot snap : snapshot.getChildren()) {
+                                    if (snap.getKey().equals(customerID)) {
+                                        String customerID2 = snap.getKey();
+                                        double lat2 = Double.parseDouble(snapshot.child("Users").child(customerID2).child("latitude").getValue().toString());
+                                        double lon2 = Double.parseDouble(snapshot.child("Users").child(customerID2).child("longitude").getValue().toString());
+
+                                        if (calculateDistance(lat, lon, lat2, lon2) <= 5) {
+                                            onStop();
+                                        }
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+
+ */
 
 
 

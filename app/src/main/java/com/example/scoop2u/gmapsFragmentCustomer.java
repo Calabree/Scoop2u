@@ -121,11 +121,15 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                activeOrder(orderInProgress);
                break;
            case R.id.stopPingButton:
-               stopPingButton.setVisibility(View.GONE);
-               pingButton.setVisibility(View.VISIBLE);
-               stopLocationUpdates();
+                stopPings();
                break;
        }
+    }
+
+    private void stopPings() {
+        stopPingButton.setVisibility(View.GONE);
+        pingButton.setVisibility(View.VISIBLE);
+        stopLocationUpdates();
     }
 
     private void ping(){    // Gets Users location and finds nearest Driver, driver is assigned a delivery to that driver, and user starts recieveing the drivers location updates
@@ -377,15 +381,15 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                                     System.out.println(d + " Miles");
 
                                     distance = d;
-                                    String driverEmail = snap.getKey();
+                                    String driverID= snap.getKey();
                                     //String driverEmail = snap.child("email").getValue().toString();
 
                                     // Save the closest drivers id to the customers account, this marks a delivery to this user.
-                                    FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
+                                    FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverID);
 
                                     orderInProgress = true;
 
-                                    System.out.println("Closest Driver: " + driverEmail);
+                                    System.out.println("Closest Driver: " + driverID);
                                 }
                             }
                         }
@@ -456,13 +460,33 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
-    private void stopLocationUpdates() {
+    public void stopLocationUpdates() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
+
+            FirebaseDatabase.getInstance().getReference().child("Users")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String driverID = snapshot.child("currentDriverID").getValue().toString();
+
+                            if (driverID.equals("null")) {
+                                stopLocationUpdates();
+                                stopPings();
+                                return;
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
             if (locationResult == null) {
                 return;
             }
