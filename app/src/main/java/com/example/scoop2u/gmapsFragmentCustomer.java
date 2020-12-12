@@ -304,9 +304,9 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
         FirebaseDatabase.getInstance().getReference().child("Users")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
+                    double distance = 0;
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        double distance = 0;
                         for (DataSnapshot snap : snapshot.getChildren()) {
 
                             String type = snap.child("accountType").getValue().toString();
