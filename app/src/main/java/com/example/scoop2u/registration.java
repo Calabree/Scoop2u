@@ -74,6 +74,9 @@ public class registration extends AppCompatActivity implements View.OnClickListe
         String rAccountType = accounttype.getSelectedItem().toString();
         String rAccountTypeIndex = getResources().getStringArray(R.array.account_type)[accounttype.getSelectedItemPosition()];
 
+        String currentDriverID ="null";
+        double longitude= 200;
+        double latitude = 200;
         if(rUsername.isEmpty()){
             userName.setError("Username is Required");
             userName.requestFocus();
@@ -119,7 +122,7 @@ public class registration extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    User user = new User(rUsername, rAccountType, rEmail);
+                    User user = new User(rUsername, rAccountType, rEmail, currentDriverID, longitude, latitude);
                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

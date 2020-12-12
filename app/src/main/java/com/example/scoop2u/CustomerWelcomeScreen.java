@@ -26,8 +26,6 @@ public class CustomerWelcomeScreen extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
-
-
     }
 
     private final BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = item -> {

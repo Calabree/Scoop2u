@@ -72,8 +72,6 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
 
     Marker m;
 
-    private FirebaseAuth mAuth;
-
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -112,7 +110,6 @@ public class gmapsFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_gmaps, container, false);
 
         map = view.findViewById(R.id.map);
-        mAuth = FirebaseAuth.getInstance();
         initGoogleMap(savedInstanceState);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
