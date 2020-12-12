@@ -324,11 +324,11 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
                                      distance = d;
 
-                                     String username = snap.child("username").getValue().toString();
+                                     String driverEmail = snap.child("email").getValue().toString();
 
-                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(username);
+                                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(driverEmail);
 
-                                     System.out.println("Closest Driver: " + username);
+                                     System.out.println("Closest Driver: " + driverEmail);
                                   }
                             }
                         }
@@ -343,7 +343,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         double t = lon1 - lon2;
-        double distance = Math.sin(lat1 * Math.PI / 180.0) * Math.sin(lat2 * Math.PI / 180.0) + Math.cos(lat1 * Math.PI / 180.0) * Math.cos(lat2 * Math.PI / 180.0);
+        double distance = Math.sin(lat1 * Math.PI / 180.0) * Math.sin(lat2 * Math.PI / 180.0) + Math.cos(lat1 * Math.PI / 180.0) * Math.cos(lat2 * Math.PI / 180.0) * Math.cos(Math.toRadians(t));
         distance = Math.acos(distance);
         distance = (distance * 180.0 / Math.PI);
         distance = distance * 60 * 1.1515;
