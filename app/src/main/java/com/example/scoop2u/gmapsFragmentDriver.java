@@ -56,7 +56,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import static android.os.SystemClock.sleep;
 
-public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback, View.OnClickListener {
+public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback {
 
     private MapView map;
 
@@ -98,35 +98,13 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
 
         initGoogleMap(savedInstanceState);
 
-        pingButton = (Button) view.findViewById(R.id.pingButton);
-        stopPingButton = (Button) view.findViewById(R.id.stopPingButton);
-        pingButton.setOnClickListener(this);
-        stopPingButton.setOnClickListener(this);
-
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(4000);
-        locationRequest.setFastestInterval(2000);
+        locationRequest.setInterval(6000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        findCustomer();
         return view;
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.pingButton:
-                pingButton.setVisibility(View.GONE);
-                stopPingButton.setVisibility(View.VISIBLE);
-
-                //activeOrder(orderInProgress);
-                break;
-            case R.id.stopPingButton:
-                stopPingButton.setVisibility(View.GONE);
-                pingButton.setVisibility(View.VISIBLE);
-                stopLocationUpdates();
-                break;
-        }
-    }
 
     /*private void ping(){
         mAuth = FirebaseAuth.getInstance();
@@ -356,16 +334,18 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
 
 
     private void findCustomer() {
-
+        System.out.println("findCustomer running");
 
         FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot snap : snapshot.getChildren()) {
+                    System.out.println("snapshot loop");
                     String type = snap.child("accountType").getValue().toString();
                     String driverID = snap.child("currentDriverID").getValue().toString();
                     if (type.equals("Customer")) {
+                        System.out.println("got a customer");
                         if (driverID.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                             String customerID = snap.getKey();
                             FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue(customerID);
@@ -382,14 +362,14 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
 
     }
 
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    /*private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         double t = lon1 - lon2;
         double distance = Math.sin(lat1 * Math.PI / 180.0) * Math.sin(lat2 * Math.PI / 180.0) + Math.cos(lat1 * Math.PI / 180.0) * Math.cos(lat2 * Math.PI / 180.0) * Math.cos(Math.toRadians(t));
         distance = Math.acos(distance);
         distance = (distance * 180.0 / Math.PI);
         distance = distance * 60 * 1.1515;
         return distance;
-    }
+    }*/
 
     //runs if customer orders
 
@@ -452,7 +432,6 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                                 System.out.println("ok");
                                 FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("latitude").setValue(location.getLatitude());
                                 FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("longitude").setValue(location.getLongitude());
-
                             }
 
                             @Override
@@ -460,6 +439,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
 
                             }
                         });
+                findCustomer();
                 LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(loc);

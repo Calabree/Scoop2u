@@ -13,7 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class DriverWelcomeScreen extends AppCompatActivity {
 
-    gmapsFragment_depricated fragment;
+    gmapsFragmentDriver fragment;
     FragmentManager fm;
     FragmentTransaction fragmentTransaction;
     @Override
@@ -21,7 +21,7 @@ public class DriverWelcomeScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_welcome_screen);
 
-        fragment=new gmapsFragment_depricated();
+        fragment=new gmapsFragmentDriver();
 
         fm = getFragmentManager();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
