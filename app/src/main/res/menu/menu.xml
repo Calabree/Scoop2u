@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/home"
-        android:title="Home"
-        android:icon="@drawable/ic_home"
-        android:checkable="true"/>
-    <item
         android:id="@+id/map"
         android:title="Map"
         android:icon="@drawable/ic_map"
-        android:checkable="true"/>
-    <item
-        android:id="@+id/receipt"
-        android:title="Receipt"
-        android:icon="@drawable/ic_receipt"
         android:checkable="true"/>
     <item
         android:id="@+id/account"

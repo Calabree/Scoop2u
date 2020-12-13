@@ -62,9 +62,6 @@ public class DriverWelcomeScreen extends AppCompatActivity {
                 fragmentTransaction.replace(R.id.container, fragment);
                 fragmentTransaction.commit();
                 break;
-            case R.id.receipt:
-                System.out.println("Receipt View");
-                break;
             case R.id.account:
                 CustomerAccountFragment caf = new CustomerAccountFragment();
                 fragmentTransaction = fm.beginTransaction();

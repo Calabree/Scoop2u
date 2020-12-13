@@ -6,11 +6,6 @@
         android:icon="@drawable/ic_map"
         android:checkable="true"/>
     <item
-        android:id="@+id/receipt"
-        android:title="Completed Orders"
-        android:icon="@drawable/ic_receipt"
-        android:checkable="true"/>
-    <item
         android:id="@+id/account"
         android:title="Account"
         android:icon="@drawable/ic_person"
