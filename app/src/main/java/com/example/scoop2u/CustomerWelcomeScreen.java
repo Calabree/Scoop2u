@@ -31,18 +31,11 @@ public class CustomerWelcomeScreen extends AppCompatActivity {
 
     private final BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = item -> {
         switch(item.getItemId()){
-
-            case R.id.home:
-                System.out.println("Home View");
-                break;
             case R.id.map: {
                 fragmentTransaction = fm.beginTransaction();
                 fragmentTransaction.replace(R.id.container, fragment);
                 fragmentTransaction.commit();
             }
-                break;
-            case R.id.receipt:
-                System.out.println("Receipt View");
                 break;
             case R.id.account:
                 CustomerAccountFragment caf = new CustomerAccountFragment();

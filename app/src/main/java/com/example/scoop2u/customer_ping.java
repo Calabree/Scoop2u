@@ -28,7 +28,7 @@ public class customer_ping extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_gmaps_depricated, container, false);
+        View view = inflater.inflate(R.layout.fragment_gmaps_driver, container, false);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
