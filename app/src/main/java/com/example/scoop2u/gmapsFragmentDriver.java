@@ -459,21 +459,20 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                                 FirebaseDatabase.getInstance().getReference("Users").child(ID).child("longitude").setValue(lon);
                                 customerID = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
 
+                                if (m2 != null) {
+                                    m2.remove();
+                                }
                                 try {
                                     double lat2 = Double.parseDouble(snapshot.child(customerID).child("latitude").getValue().toString());
                                     double lon2 = Double.parseDouble(snapshot.child(customerID).child("longitude").getValue().toString());
 
-                                    if (m2 != null) {
-                                        m2.remove();
-                                    }
-
-                                    LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+                                    LatLng loc = new LatLng(lat2, lon2);
                                     MarkerOptions markerOptions = new MarkerOptions();
                                     markerOptions.position(loc);
                                     m2 = gmap.addMarker(markerOptions);
 
                                     double distance = calculateDistance(lat, lon, lat2, lon2);
-                                    if (distance <= 5.0) {
+                                    if (distance <= 1.0) {
                                         System.out.println("stopped, driver within 5 miles");
 
                                         FirebaseDatabase.getInstance().getReference("Users").child(customerID).child("currentDriverID").setValue("null");
@@ -481,6 +480,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                                     }
                                 } catch(NullPointerException e) {
                                     System.out.println("NullPointerException thrown!");
+                                    FirebaseDatabase.getInstance().getReference("Users").child(ID).child("currentDriverID").setValue("null");
                                     findCustomer();
                                 }
 
