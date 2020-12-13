@@ -81,7 +81,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
     private Marker driverMark;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
+
     FirebaseUser currentuser;
 
     @Nullable
@@ -185,7 +185,6 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         map.onCreate(mapViewBundle);
 
         map.getMapAsync(this);
-
     }
 
     @Override
@@ -335,7 +334,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap map1) {
         gmap = map1;
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) // Check permissions before trying to enable current location
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -370,29 +369,30 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
     private void findNearestDriverId(double lat1, double lon1) {    // find the nearest driver when a ping is recieved.
 
-
         FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
 
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) { // Loop through each user int he database and find drivers coordinates
-                        orderInProgress = false;
-                        double distance = 0;
-                        for (DataSnapshot snap : snapshot.getChildren()) {
 
-                            String type = snap.child("accountType").getValue().toString();
-                            System.out.println();
+                        orderInProgress = false;
+
+                        double distance = 0;
+
+                        for (DataSnapshot snap : snapshot.getChildren()) { // Loop through users in the firebase db
+
+                            String type = snap.child("accountType").getValue().toString(); // Get account type
+
                             if (type.equals("Driver")) { // If the user is a driver
+
                                 double lat2 = Double.parseDouble(snap.child("latitude").getValue().toString());
                                 double lon2 = Double.parseDouble(snap.child("longitude").getValue().toString());
-                                System.out.println(lat2 + " ,s " + lon2);
 
                                 double d = calculateDistance(lat1, lon1, lat2, lon2); // Use calculateDistance function to determines the distance to customer
 
-                                System.out.println(d);
                                 if (d < distance || distance == 0) {
-                                    System.out.println(d + " Miles");
 
                                     distance = d;
+
                                     String driverID= snap.getKey();
                                     //String driverEmail = snap.child("email").getValue().toString();
 
@@ -405,18 +405,12 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                                 }
                             }
                         }
-
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
                     }
-
-
                 });
-
-                //activeOrder(orderInProgress);
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) { // Calculates distance from one set of latitude / longitude to another
@@ -435,11 +429,12 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         } else {
             askPermission();
         }
-        }
+    }
 
 
 
     private void checkSetting() { // Check the location setting and if they are correct start location updates
+
         LocationSettingsRequest request = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build();
 
         SettingsClient client = LocationServices.getSettingsClient(context);
@@ -447,7 +442,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
         Task<LocationSettingsResponse> locationSettingsResponseTask = client.checkLocationSettings(request);
         locationSettingsResponseTask.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {  // If permission are given start location updates
                 startLocationUpdates();
             }
         });
@@ -478,16 +473,16 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
     LocationCallback locationCallback = new LocationCallback() {
         @Override
-        public void onLocationResult(LocationResult locationResult) {
+        public void onLocationResult(LocationResult locationResult) {   // location callback, this runs every time location is updated.
 
             FirebaseDatabase.getInstance().getReference().child("Users")
                     .addListenerForSingleValueEvent(new ValueEventListener() {
 
                         @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {  // get the drivers id who is serving this customer
                             String driverID = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
 
-                            if (driverID.equals("null")) {
+                            if (driverID.equals("null")) {  // If it is null stop the ping and location updates, as there is no driver to recieve them
                                 stopLocationUpdates();
                                 stopPings();
                             }
@@ -498,34 +493,40 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
                         }
                     });
-            if (locationResult == null) {
+
+            if (locationResult == null) { // If no location found
                 return;
             }
+
             for(Location location : locationResult.getLocations()) {
+
                 if (driverMark!= null) {
                     driverMark.remove();
                 }
+
                 Log.d(TAG, "OnLocationResult " + location.toString());
 
                 FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
 
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        System.out.println("firebase");
+
                         String currentDriver = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
+
                         if(driverMark!= null){
                             driverMark.remove();
                         }
 
                         try {
+
                             double lat2 = Double.parseDouble(snapshot.child(currentDriver).child("latitude").getValue().toString());
                             double lon2 = Double.parseDouble(snapshot.child(currentDriver).child("longitude").getValue().toString());
-                            System.out.println("driver lat:"+lat2+",drver lon:"+lon2);
 
                             LatLng loc = new LatLng(lat2, lon2);
                             MarkerOptions markerOptions = new MarkerOptions();
                             markerOptions.position(loc);
                             driverMark = gmap.addMarker(markerOptions);
+
                         } catch (NullPointerException e) {
                             System.out.println("NullPointerException thrown!");
                         }

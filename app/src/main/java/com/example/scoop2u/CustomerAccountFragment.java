@@ -78,6 +78,7 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                 String email = snapshot.child("Users").child(user.getUid()).child("email").getValue().toString();
                 String username = snapshot.child("Users").child(user.getUid()).child("username").getValue().toString();
                 String type = snapshot.child("Users").child(user.getUid()).child("accountType").getValue().toString();
@@ -95,6 +96,7 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
     }
 
     public void logout(){
+
         FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(getActivity(), LoginScreen.class);
         startActivity(intent);
@@ -136,16 +138,20 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
 
 
                         final String email = user.getEmail();
+
                         AuthCredential credential = EmailAuthProvider.getCredential(email, p1.getText().toString());
 
                         user.reauthenticate(credential)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
+
                                         if (task.isSuccessful()) {
+
                                             user.updatePassword(p2.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
+
                                                     if (task.isSuccessful()) {
                                                         Toast.makeText(getActivity(), "Password Reset", Toast.LENGTH_SHORT).show();
                                                     } else {
@@ -154,11 +160,13 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
                                                 }
                                             });
                                         } else {
+
                                             Toast.makeText(getActivity(), "Auth Error", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
                     } else {
+
                         p2.setError("Passwords must match");
                         p3.setError("Passwords must match");
                     }
@@ -178,6 +186,7 @@ public class CustomerAccountFragment extends Fragment implements View.OnClickLis
     @Override
     public void onClick(View v)  {
         switch (v.getId()) {
+
             case R.id.accountChangePassword:
                 changePassword();
                 break;
