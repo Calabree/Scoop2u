@@ -502,6 +502,10 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         System.out.println("firebase");
                         String currentDriver = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
+
+                        if (currentDriver.equals("null")){
+                            return;
+                        }
                         double lat2 = Double.parseDouble(snapshot.child(currentDriver).child("latitude").getValue().toString());
                         double lon2 = Double.parseDouble(snapshot.child(currentDriver).child("longitude").getValue().toString());
                         System.out.println("driver lat:"+lat2+",drver lon:"+lon2);
