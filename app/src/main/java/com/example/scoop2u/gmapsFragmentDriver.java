@@ -459,6 +459,10 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                                 FirebaseDatabase.getInstance().getReference("Users").child(ID).child("longitude").setValue(lon);
                                 customerID = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
 
+                                if (customerID.equals("null")) {
+                                    return;
+                                }
+
                                 double lat2 = Double.parseDouble(snapshot.child(customerID).child("latitude").getValue().toString());
                                 double lon2 = Double.parseDouble(snapshot.child(customerID).child("longitude").getValue().toString());
 

@@ -473,7 +473,7 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
 
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String driverID = snapshot.child("currentDriverID").getValue().toString();
+                            String driverID = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
 
                             if (driverID.equals("null")) {
                                 stopLocationUpdates();
