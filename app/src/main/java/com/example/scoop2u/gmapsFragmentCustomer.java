@@ -122,6 +122,18 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                break;
            case R.id.stopPingButton:
                 stopPings();
+               FirebaseDatabase.getInstance().getReference().child("Users")
+                       .addListenerForSingleValueEvent(new ValueEventListener() {
+                           @Override
+                           public void onDataChange(@NonNull DataSnapshot snapshot) {
+                               FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").setValue("null");
+                           }
+
+                           @Override
+                           public void onCancelled(@NonNull DatabaseError error) {
+
+                           }
+                       });
                break;
        }
     }
@@ -501,6 +513,9 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         System.out.println("firebase");
                         String currentDriver = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
+                        if(driverMark!= null){
+                            driverMark.remove();
+                        }
 
                         try {
                             double lat2 = Double.parseDouble(snapshot.child(currentDriver).child("latitude").getValue().toString());
