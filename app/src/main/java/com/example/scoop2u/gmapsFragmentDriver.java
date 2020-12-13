@@ -187,7 +187,6 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
         map.onResume();
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            getLastLocation();
             checkSetting();
         } else {
             askPermission();
@@ -433,6 +432,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
+
             if (locationResult == null) {
                 return;
             }
@@ -472,6 +472,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                                     }
                                 } catch(NullPointerException e) {
                                     System.out.println("NullPointerException thrown!");
+                                    findCustomer();
                                 }
 
                             }
