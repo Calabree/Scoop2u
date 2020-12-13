@@ -478,7 +478,6 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                             if (driverID.equals("null")) {
                                 stopLocationUpdates();
                                 stopPings();
-                                return;
                             }
                         }
 
@@ -503,17 +502,19 @@ public class gmapsFragmentCustomer extends Fragment implements OnMapReadyCallbac
                         System.out.println("firebase");
                         String currentDriver = snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("currentDriverID").getValue().toString();
 
-                        if (currentDriver.equals("null")){
-                            return;
-                        }
-                        double lat2 = Double.parseDouble(snapshot.child(currentDriver).child("latitude").getValue().toString());
-                        double lon2 = Double.parseDouble(snapshot.child(currentDriver).child("longitude").getValue().toString());
-                        System.out.println("driver lat:"+lat2+",drver lon:"+lon2);
+                        try {
+                            double lat2 = Double.parseDouble(snapshot.child(currentDriver).child("latitude").getValue().toString());
+                            double lon2 = Double.parseDouble(snapshot.child(currentDriver).child("longitude").getValue().toString());
+                            System.out.println("driver lat:"+lat2+",drver lon:"+lon2);
 
-                        LatLng loc = new LatLng(lat2, lon2);
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(loc);
-                        driverMark = gmap.addMarker(markerOptions);
+                            LatLng loc = new LatLng(lat2, lon2);
+                            MarkerOptions markerOptions = new MarkerOptions();
+                            markerOptions.position(loc);
+                            driverMark = gmap.addMarker(markerOptions);
+                        } catch (NullPointerException e) {
+                            System.out.println("NullPointerException thrown!");
+                        }
+
 
                     }
 
