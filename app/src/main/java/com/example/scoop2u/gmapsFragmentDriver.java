@@ -78,7 +78,7 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
 
     private LocationRequest locationRequest;
 
-    private Marker m;
+    private Marker m, m2;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -463,6 +463,15 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
                                     double lat2 = Double.parseDouble(snapshot.child(customerID).child("latitude").getValue().toString());
                                     double lon2 = Double.parseDouble(snapshot.child(customerID).child("longitude").getValue().toString());
 
+                                    if (m2 != null) {
+                                        m2.remove();
+                                    }
+
+                                    LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+                                    MarkerOptions markerOptions = new MarkerOptions();
+                                    markerOptions.position(loc);
+                                    m2 = gmap.addMarker(markerOptions);
+
                                     double distance = calculateDistance(lat, lon, lat2, lon2);
                                     if (distance <= 5.0) {
                                         System.out.println("stopped, driver within 5 miles");
@@ -482,35 +491,6 @@ public class gmapsFragmentDriver extends Fragment implements OnMapReadyCallback,
 
                             }
                         });
-/*
-                FirebaseDatabase.getInstance().getReference().child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
-
-                    @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                for (DataSnapshot snap : snapshot.getChildren()) {
-                                    if (snap.getKey().equals(customerID)) {
-                                        String customerID2 = snap.getKey();
-                                        double lat2 = Double.parseDouble(snapshot.child("Users").child(customerID2).child("latitude").getValue().toString());
-                                        double lon2 = Double.parseDouble(snapshot.child("Users").child(customerID2).child("longitude").getValue().toString());
-
-                                        if (calculateDistance(lat, lon, lat2, lon2) <= 5) {
-                                            onStop();
-                                        }
-                                    }
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
-
-
- */
-
-
-
-
                 LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(loc);
